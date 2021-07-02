@@ -1,12 +1,23 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-
+import Task from './components/Tasks';
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+
+      {/* my todo application */}
+      <View style={styles.tasksWrapper}>
+
+        <Text style={styles.sectionTitle}>LIST TO DO</Text>
+
+        <View style={styles.items}>
+             <Task text={'mosab'}/>
+             <Task text={'ali'}/>
+        </View>
+
+      </View>
+
     </View>
   );
 }
@@ -14,8 +25,21 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#E8EAED',
   },
+  tasksWrapper:{
+    paddingTop:80,
+    paddingHorizontal:20,
+
+  },
+  sectionTitle:{
+    fontSize:24,
+    fontWeight:'bold',
+
+  },
+  items:{
+    marginTop:30,
+  }
+
+
 });
