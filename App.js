@@ -1,27 +1,90 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
-
+import React, { useState, useEffect } from 'react';
+import axios from 'axios'
 import { StyleSheet, TextInput, Text, View, KeyboardAvoidingView, Platform, TouchableOpacity, Keyboard } from 'react-native';
 import Task from './components/Tasks';
+const baseURL = 'https://sadsadasdasnihad.herokuapp.com/'
+const url = '/todo'
 export default function App() {
 
 
+
   const [task, setTask] = useState()
-  const [taskItems, setTaskItem] = useState([])
+  const [taskItems, setTaskItems] = useState([])
+
+
+
+  useEffect(() => {
+    axios({
+      method: 'get',
+      baseURL: baseURL,
+      url: url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-origin': baseURL
+      }
+    })
+      .then((res) => setTaskItems([...res.data]))
+      .catch((e) => {
+        setTaskItems([]);
+        console.log(e);
+      });
+  }, [])
+  // setTaskItems(res.data.results)
+
+
+
+
 
 
   const handleAddTask = () => {
     Keyboard.dismiss();
-    setTaskItem([...taskItems, task])
+    // setTaskItems([...taskItems, {text:task}])
+    axios({
+      method: 'post',
+      baseURL: baseURL,
+      url: url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-origin': baseURL
+      },
+      data: JSON.stringify({ text: task })
+    })
+      .then((savedItem) => {
+        console.log(savedItem.data);
+        setTaskItems([...taskItems, savedItem.data])
+      })
+      .catch(console.error);
+
+
     setTask('')
+
+
   }
+  // console.log(taskItems);
 
+  const completeTask = (index, id) => {
+    console.log(id);
 
-  const completeTask = (index) => {
+    axios({
+      method: 'delete',
+      baseURL: baseURL,
+      url: `${url}/${id}`,
+      // cors is not required to delete
+      headers: {
+        'Access-Control-Allow-origin': baseURL
+      },
+    })
+      // .then((data) => setList(data.results))
+      .catch(console.error);
+
     let itemCopy = [...taskItems];
     itemCopy.splice(index, 1);
-    setTaskItem(itemCopy);
+    setTaskItems(itemCopy);
   }
+
+
+
   return (
 
     <View style={styles.container}>
@@ -34,8 +97,8 @@ export default function App() {
           {
             taskItems.map((item, index) => {
               return (
-                <TouchableOpacity key={index} onPress={()=>completeTask(index)}>
-                  <Task  text={item} />
+                <TouchableOpacity key={item._id} onPress={() => completeTask(index, item._id)}>
+                  <Task text={item.text} />
                 </TouchableOpacity>
               )
             })
